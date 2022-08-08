@@ -1,6 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 import { Post } from './post.model';
 import { PostService } from './post.service';
 import { Subscription } from 'rxjs';
@@ -18,7 +16,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private errorSub: Subscription;
 
     constructor(
-        private http: HttpClient,
         private postService: PostService
     ) {}
 
@@ -30,21 +27,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     onCreatePost(postData: Post) {
-        // Send Http request
-        console.log(postData);
-        this.postService.savePost(postData.title, postData.content);
-    }
-
-    onFetchPosts() {
-        // Send Http request
-        this.fetchPosts();
+        this.postService.savePost(postData.title, postData.content).subscribe(() => {
+            this.fetchPosts();
+        }, error => {
+            this.error.next(error);
+        });
     }
 
     onClearPosts() {
-        // Send Http request
         if(confirm('Are you sure you want to delete all posts?')) {
             this.postService.deletPosts().subscribe(() => {
-                this.loadedPosts = [];
+                this.fetchPosts();
             });
         }
     }
@@ -66,9 +59,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     deletePost(id: string) {
-        this.postService.deletPost(id).subscribe(response => {
-            console.log('response: ', response);
-        });
+        if(confirm('Are you sure you want to delete the post?')) {
+            this.postService.deletPost(id).subscribe(() => {
+                this.fetchPosts();
+            }, error => {
+                this.error = error;
+            });
+        }
     }
 
     ngOnDestroy(): void {

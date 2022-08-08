@@ -13,38 +13,31 @@
                 <button class="btn btn-primary" type="submit" [disabled]="!postForm.valid">
                     Send Post
                 </button>
+                <button class="btn btn-danger" type="button" [disabled]="loadedPosts.length < 1"
+                    (click)="onClearPosts()">
+                    Delete All Posts
+                </button>
             </form>
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-md-6 col-md-offset-3">
-            <button class="btn btn-primary" (click)="onFetchPosts()">
-                Fetch Posts
-            </button>
-            |
-            <button class="btn btn-danger" [disabled]="loadedPosts.length < 1" (click)="onClearPosts()">
-                Delete All Posts
-            </button>
         </div>
     </div>
     <div class="row">
         <div class="col-xs-12 col-md-6 col-md-offset-3">
             <p *ngIf="loadedPosts.length < 1 && !isFetching">No posts available!</p>
             <ul class="list-group" *ngIf="loadedPosts.length >= 1 && !isFetching">
-                <li class="list-group-item row" *ngFor="let post of loadedPosts">
-                    <div class="col-xs-9">
-                    <h3>{{post.title}}</h3>
-                    <p>{{post.content}}</p>
-                    <p>{{post.id}}</p>
-                </div>
-                <div class="col-xs-3"><button class="btn btn-danger">Delete</button></div>
+                <li class="list-group-item row middle" *ngFor="let post of loadedPosts">
+                    <div class="col-xs-10">
+                        <h3>{{post.title}}</h3>
+                        <p>{{post.content}}</p>
+                    </div>
+                    <div class="col-xs-2">
+                        <button class="btn btn-danger" (click)="deletePost(post.id)">Delete</button>
+                    </div>
                 </li>
             </ul>
             <p *ngIf="isFetching && !error">Loading...</p>
             <div class="alert alert-danger" *ngIf="error">
                 <h1>An error occured!</h1>
-                <p>{{ error?.error.error }}!</p>
+                <p>{{ error?.message }}!</p>
                 <button class="btn btn-danger pull-right" (click)="onHandleError()">OK</button>
             </div>
         </div>
